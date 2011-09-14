@@ -5,3 +5,11 @@ Requires python 2.6 with paramiko
     For Unbuntu 10.04 users: sudo apt-get install python-paramiko
 
 
+This project uses the following projects
+
+    git://github.com/crc32a/dnsxmlserver.git for the XMLRPC controllable 
+    DNS server
+
+    git://github.com/crc32a/NodeToys.git for the NodeToys project that 
+    actually gets deployed by the servers tools.
+
