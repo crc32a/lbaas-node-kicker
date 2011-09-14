@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+
+from rest_client import getbaseuri
+import rest_client
+import urllib2
+import cPickle
+import util
+import sys
+import os
+
+
+
+def printf(format,*args): sys.stdout.write(format%args)
+def fprintf(fp,format,*args): fp.write(format%args)
+
+def usage(prog):
+    printf("Usage is %s <auth_file.json>\n",prog)
+    printf("\n")
+    printf("Fetch auth tokens for the account specified in the auth_xml_file\n")
+
+prog = os.path.basename(sys.argv[0])
+if len(sys.argv)<2:
+    usage(prog)
+    sys.exit()
+
+authjson_file = sys.argv[1]
+
+kw = util.load_json(authjson_file)
+req = rest_client.RestClient(**kw)
+printf("kw=%s\n",kw)
+req.set_config(**kw)
+
+resp = req.send_req()
+
+try:
+    resp = req.send_req()
+except:
+    printf("Error: ",resp.read())
+
+auth_headers = dict(resp.headers.items())
+
+printf("Headers =:\n")
+for (k,v) in auth_headers.items():
+    printf("%s: %s\n",k,v)
+
+rest_client.save_cpickle(auth_headers,"./auth_headers.db")

@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+from util import printf, fprintf
+import util
+import re
+
+if __name__=='__main__':
+    config = util.load_json('config.json')
+    hosts = util.getHostsByNumber(config)
+    keys = sorted(hosts.keys())
+    for k in keys:
+        format = "%s: %s (%s)\n"
+        args = []
+        args.append(hosts[k]["name"])
+        args.append(hosts[k]["addresses"]["public"][0])
+        args.append(hosts[k]["status"])
+        printf(format,*args)
