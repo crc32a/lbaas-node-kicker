@@ -1,3 +1,7 @@
 CloudServers API tools that build Nodes for the lbaas project.
 
+Requires python 2.6 with paramiko
+    For MacPorts users: sudo port install py26-paramiko
+    For Unbuntu 10.04 users: sudo apt-get install python-paramiko
+
 
