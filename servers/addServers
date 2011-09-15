@@ -36,10 +36,13 @@ if __name__ == "__main__":
         for i in intersection:
             printf("%s\n",hosts[i]["name"])
         sys.exit()
-    for i in new_nums:
+    for i in sorted(new_nums):
         host_name = "n%i%s"%(i,config["baseHost"])
         printf("Adding host: %s\n",host_name)
         resp = util.createServer(config,host_name)
-        time.sleep(15.0) #The CloudServer guys recommended 
-                         #a sleep of 15 seconds Between builds
+        printf("Sleeping: ")
+        for i in xrange(0,15):
+            time.sleep(1.0)
+            sys.stdout.write(" %i "%i)
+            sys.stdout.flush()
         printf("%s\n",resp)

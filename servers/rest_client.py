@@ -19,7 +19,13 @@ http_re = re.compile("(.*)://([^/\:]*):?([0-9]+)?/(.*)",re.IGNORECASE)
 
 def get_servers_url(file_name):
     key = "x-server-management-url"
-    return load_cpickle(file_name)[key]
+    try:
+        url = load_cpickle(file_name)[key]
+    except IOError:
+        url = ""
+    except KeyError:
+        url = ""
+    return url
 
 def getparams(params_in):
     params = urllib.urlencode(params_in)
