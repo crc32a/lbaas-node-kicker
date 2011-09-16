@@ -1,0 +1,41 @@
+#!/usr/bin/env python
+
+from util import printf, fprintf
+import xmlrpclib
+import util
+import re
+
+a_re = re.compile("^n([0-9]+)$")
+
+if __name__=='__main__':
+    dnsconf = util.load_json("dnsxmlclient.json")
+    config = util.load_json('config.json')
+
+    url = dnsconf["url"]
+    cred = dnsconf["cred"]
+    s = xmlrpclib.ServerProxy(url)
+    A = {}
+    for(host,ip) in s.getARecords(cred).items():
+        m = a_re.match(host)
+        if m:
+            A[int(m.group(1))]=ip
+    hosts = util.getHostsByNumber(config)
+    keys = sorted(hosts.keys())
+    S = {}
+    for k in keys:
+        S[k]=hosts[k]["addresses"]["public"][0]
+    
+    for id in sorted((set(A.keys()) - set(S.keys()))):
+        printf("Removing A Record: %s %s\n",id,A[id])
+        s.delARecord(cred,"n%i"%id)
+
+    for id in sorted((set(S.keys()) - set(A.keys()))):
+        printf("Adding A record: %s %s\n",id,S[id])
+        s.setARecord(cred,"n%i"%id,S[id])
+
+    for id in sorted((set(S.keys()) & set(A.keys()))):       
+        if S[id] != A[id]:
+            printf("Updating %s to %s\n",id,S[id])
+            s.setARecord(cred,"n%i"%id,S[id])
+        else:
+            printf(" Leaving %s %s alone\n",id,S[id])

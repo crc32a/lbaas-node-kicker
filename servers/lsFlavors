@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+from util import printf, fprintf
+import servers
+import util
+
+if __name__=='__main__':
+    config = util.load_json('config.json')
+    s = servers.Servers()
+    ft = {} 
+    flavors = s.flavorTypes()
+    for flavor in flavors["flavors"]:
+        ft[flavor["id"]]=flavor
+ 
+    for id in sorted(ft.keys()):
+        args = (id,ft[id]["ram"],ft[id]["disk"],ft[id]["name"])
+        printf("%i: %iMB(Ram) %iGB(Disk) \"%s\"(name)\n",*args)    

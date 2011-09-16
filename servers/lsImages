@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+
+from util import printf, fprintf
+import servers
+import util
+
+if __name__=='__main__':
+    config = util.load_json('config.json')
+    s = servers.Servers()
+    it = {} 
+    images = s.imageTypes()
+    for image in images["images"]:
+        it[image["id"]]=image
+ 
+    for id in sorted(it.keys()):
+        args = (id,it[id]["status"],it[id]["updated"],it[id]["name"])
+        printf("%i: %s(status) %s(updated) \"%s\"(name)\n",*args)
