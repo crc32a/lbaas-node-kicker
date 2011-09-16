@@ -23,10 +23,10 @@ if __name__ == "__main__":
         url = "http://n%i.crc.m2linux.com/request/yhwh"%i
         try:
             resp = urllib2.urlopen(url).read()
-            printf("node[%i]:PASS\n",i)
+            printf("node[%3i]:PASS\n",i)
         except KeyboardInterrupt:
             raise
         except:
-            printf("node[%i]:    FAIL\n",i)
+            printf("node[%3i]:    FAIL\n",i)
 
 
