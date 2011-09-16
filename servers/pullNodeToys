@@ -1,0 +1,56 @@
+#!/usr/bin/env python
+
+from util import printf,fprintf
+import sshlib
+import util
+import sys
+import os
+import re
+
+def usage(prog):
+    printf("Usage is %s <passwd> <start> <stop>\n",prog)
+    printf("\n")
+    printf("Example %s 1 10\n",prog)
+    printf("\n")
+    printf("Pulls NodeToys on the specified servers\n")
+
+if __name__ == "__main__":
+    prog = sys.argv[0]
+    if len(sys.argv)<4:
+        usage(prog)
+        sys.exit()
+    config = util.load_json("config.json")
+    passwd = sys.argv[1]
+    first = int(sys.argv[2])
+    last  = int(sys.argv[3])
+    hosts = util.getHostsByNumber(config)
+    old_nums = set(hosts.keys())
+    del_nums = set(xrange(first,last+1))
+    dontexist = del_nums - old_nums
+    if len(dontexist)>0:
+        dontexistnames = ["n%i%s"%(i,config["baseHost"]) for i in dontexist]
+        printf("The below hosts do not  exist and can not be password changed")
+        for name in dontexistnames:
+            printf("%s\n",name)
+        del_nums = del_nums - dontexist# Takes care of bogus delete attempts
+        printf("PFFT----------------------------------------------\n")
+    for i in del_nums:
+        host_name = hosts[i]["name"]
+        printf("pulling Node Toys for host: %s\n",host_name)
+        cmds = []
+        cmds.append("/usr/local/sbin/pullNodeToys")
+        cmds.append("/etc/init.d/apache2 restart")
+        opts = {}
+        opts["user"]="root"
+        opts["passwd"] = passwd
+        opts["host"] = hosts[i]["addresses"]["public"][0]
+        opts["commands"]=cmds
+        (fp,pid) = sshlib.pssh(**opts)
+        while True:
+            line = fp.readline()
+            if line == "":
+                break
+            sys.stdout.write(line)
+            sys.stdout.flush()
+        printf("\n\n\n")
+        printf("Finished with host %s\n",opts["host"])
