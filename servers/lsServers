@@ -9,9 +9,10 @@ if __name__=='__main__':
     hosts = util.getHostsByNumber(config)
     keys = sorted(hosts.keys())
     for k in keys:
-        format = "%s: %s (%s)\n"
+        format = "%s: %s id=%i (%s)\n"
         args = []
         args.append(hosts[k]["name"])
         args.append(hosts[k]["addresses"]["public"][0])
+        args.append(hosts[k]["id"])
         args.append(hosts[k]["status"])
         printf(format,*args)

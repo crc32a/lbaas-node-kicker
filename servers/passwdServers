@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from util import printf,fprintf
+import servers
 import time
 import util
 import sys
@@ -22,6 +23,7 @@ if __name__ == "__main__":
     if len(sys.argv)<4:
         usage(prog)
         sys.exit()
+    s = servers.Servers()
     config = util.load_json("config.json")
     passwd = sys.argv[1]
     first = int(sys.argv[2])
@@ -39,13 +41,15 @@ if __name__ == "__main__":
         printf("PFFT----------------------------------------------\n")
     for i in del_nums:
         host_name = hosts[i]["name"]
-        printf("changing password for host: %s\n",host_name)
-        resp = util.setPasswdServer(config,host_name,passwd)
+        id = hosts[i]["id"]
+        printf("changing password for host: %s id=%i\n",host_name,id)
+        sys.stdout.flush()
+        resp = s.setPasswdServer(id,passwd)
         printf("%s\n",resp)
         printf("Sleeping: ")
         sys.stdout.flush()
         for i in xrange(0,5):
             printf("%s ",i)
             sys.stdout.flush()
-            time.sleep(1.0)
-            
+            time.sleep(1.0)            
+        printf("All done\n")

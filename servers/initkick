@@ -55,4 +55,5 @@ if __name__ == "__main__":
                 break
             sys.stdout.write(line)
             sys.stdout.flush()
+        printf("\n\n\n")
         printf("Finished with host %s\n",opts["host"])
