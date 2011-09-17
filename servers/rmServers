@@ -37,6 +37,7 @@ if __name__ == "__main__":
         printf("PFFT----------------------------------------------\n")
     for i in del_nums:
         host_name = hosts[i]["name"]
-        printf("deleteing host: %s\n",host_name)
+        host_id = hosts[i]["id"]
+        printf("deleteing host: %s id=%i \n",host_name,host_id)
         resp = util.deleteServer(host_name)
         printf("%s\n",resp)
