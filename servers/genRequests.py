@@ -58,7 +58,7 @@ def build_req(reqObj,ips):
     nodeMin = reqObj["nodes"]["min"]
     nodeMax = reqObj["nodes"]["max"]
    
-    for i in xrange(0,lbQ+1):
+    for i in xrange(0,lbQuan+1):
         nodesStr ="" 
         n = random.randint(nodeMin, nodeMax)
          
