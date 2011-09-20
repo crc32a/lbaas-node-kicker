@@ -96,7 +96,3 @@ if __name__ == "__main__":
     random.shuffle(request_list)     
    
     util.save_json("requests.json", request_list)
-    fp = open("requests.xml", "w")
-    for reqStr in request_list:
-        fp.write(reqStr) 
-    fp.close()  
