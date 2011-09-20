@@ -17,6 +17,15 @@ def load_url(file_name):
     url = cf["hostUrl"]
     return url
 
+def write_log(logStr, lb):
+    fp = open("metrics.log", "a")
+    fp.write("Took ")
+    fp.write("%g "%logStr)
+    fp.write("seconds to return response: ")
+    fp.write(lb)
+    fp.write("\n")
+    fp.close()
+
 def build_lbs(reqs):    
     for lb in reqs:
         with open('auth_headers.db') as pickle_file:
@@ -26,7 +35,13 @@ def build_lbs(reqs):
         url = load_url("lbconfig.json")
         request = urllib2.Request(url, lb, headers) 
         try:
+            start = time.time()
             resp = urllib2.urlopen(request)
+            end = time.time()
+            reqTime = end - start
+    
+            print("Took ","%.2g"%reqTime,"seconds to return a response", "\n")
+            write_log(reqTime, lb)
             printf("%s\n",resp.read())
         except urllib2.HTTPError, e:
             printf("Exception resp.code=%s\n%s\n",e.code,e.read())
