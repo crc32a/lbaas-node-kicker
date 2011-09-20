@@ -17,11 +17,12 @@ def load_url(file_name):
     url = cf["hostUrl"]
     return url
 
-def write_log(logStr, lb, code):
+def write_log(logStr, error, lb, code):
     fp = open("metrics.log", "a")
     fp.write("Took ")
     fp.write("%g "%logStr)
     fp.write("seconds to return response: \n")
+    fp.write("%s\n"%error)
     fp.write("Response status code: %s \n"%code)
     fp.write(lb)
     fp.write("\n")
@@ -32,8 +33,9 @@ def build_lbs(reqs):
         with open('auth_headers.db') as pickle_file:
             data = pickle.load(pickle_file)
             token = data["x-auth-token"]
-        headers = {"bypass-auth": "true", "x-auth-token": token, "Content-type": "application/xml"}
+        headers = {"x-auth-token": token, "Content-type": "application/xml"}
         url = load_url("lbconfig.json")
+        printf("\n\nurl=%s\ndata=%s\nheaders=%s\n",url,lb,headers)
         request = urllib2.Request(url, lb, headers) 
         try:
             start = time.time()
@@ -45,7 +47,7 @@ def build_lbs(reqs):
             write_log(reqTime, lb, resp.code)
             printf("%s\n",resp.read())
         except urllib2.HTTPError, e:
-            write_log("Exception resp.code=%s\n%s\n",e.code,e.read(), lb, e.code)
+            write_log(0.0, e.read(), lb, e.code)
             printf("Exception resp.code=%s\n%s\n",e.code,e.read())
 
 if __name__ == "__main__":
