@@ -22,7 +22,7 @@ def build_lbs(reqs):
         with open('auth_headers.db') as pickle_file:
             data = pickle.load(pickle_file)
             token = data["x-auth-token"]
-        headers = {"bypass-auth": "true", "x-auth-token": token, "Content-type": "application-xml"}
+        headers = {"bypass-auth": "true", "x-auth-token": token, "Content-type": "application/xml"}
         url = load_url("lbconfig.json")
         request = urllib2.Request(url, lb, headers) 
         resp = urllib2.urlopen(request)
