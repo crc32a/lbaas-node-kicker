@@ -17,11 +17,12 @@ def load_url(file_name):
     url = cf["hostUrl"]
     return url
 
-def write_log(logStr, lb):
+def write_log(logStr, lb, code):
     fp = open("metrics.log", "a")
     fp.write("Took ")
     fp.write("%g "%logStr)
-    fp.write("seconds to return response: ")
+    fp.write("seconds to return response: \n")
+    fp.write("Response status code: %s \n"%code)
     fp.write(lb)
     fp.write("\n")
     fp.close()
@@ -40,10 +41,11 @@ def build_lbs(reqs):
             end = time.time()
             reqTime = end - start
     
-            print("Took ","%.2g"%reqTime,"seconds to return a response", "\n")
-            write_log(reqTime, lb)
+            printf("%s%s%s", "Took ","%.2g"%reqTime," seconds to return a response \n")
+            write_log(reqTime, lb, resp.code)
             printf("%s\n",resp.read())
         except urllib2.HTTPError, e:
+            write_log("Exception resp.code=%s\n%s\n",e.code,e.read(), lb, e.code)
             printf("Exception resp.code=%s\n%s\n",e.code,e.read())
 
 if __name__ == "__main__":

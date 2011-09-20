@@ -2,3 +2,5 @@
 *.json
 *.db
 *.xml
+*.bak
+*.log
