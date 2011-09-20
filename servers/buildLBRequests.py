@@ -25,8 +25,11 @@ def build_lbs(reqs):
         headers = {"bypass-auth": "true", "x-auth-token": token, "Content-type": "application/xml"}
         url = load_url("lbconfig.json")
         request = urllib2.Request(url, lb, headers) 
-        resp = urllib2.urlopen(request)
-        print(resp)
+        try:
+            resp = urllib2.urlopen(request)
+            printf("%s\n",resp.read())
+        except urllib2.HTTPError, e:
+            printf("Exception resp.code=%s\n%s\n",e.code,e.read())
 
 if __name__ == "__main__":
     lbs = util.load_json("requests.json")
