@@ -65,9 +65,10 @@ def build_req(req_obj,ips):
     for i in xrange(0,lb_quan):
         nodesStr ="" 
         n = random.randint(node_min, node_max)
-         
+        ip_choices = set(ips[nodeip_type])
         for j in xrange(0, n):
-            ip = random.choice(ips[nodeip_type])
+            ip = random.choice(list(ip_choices))
+            ip_choices.remove(ip)
             nodeStr = lb_node%(ip, node_port)
             nodesStr += "%s\n    "%nodeStr
         
