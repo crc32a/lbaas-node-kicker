@@ -34,41 +34,50 @@ lb_post = \
    <nodes>
        %s
    </nodes>
-</loadBalancer>"""
+      %s
+</loadBalancer>
+"""
 
 
 lb_node = \
-"""    <node address="%s" port="%s" condition="ENABLED"/>
-"""
+"""<node address="%s" port="%s" condition="ENABLED"/>"""
+
+hm_req = \
+"""<healthMonitor type="%s" delay="10" timeout="10" attemptsBeforeDeactivation="3" />"""
 
 def usage(prog):
-    printf("Usage: will pull attributes from reqConfig.json \n")
+    printf("Usage:Configure several json configs to build multiple loadbalancer request objects (will pull attributes from reqConfig.json) \n")
 
-def build_req(reqObj,ips):
+def build_req(req_obj,ips):
     reqs = []
-    lbQuan = reqObj["quantity"]
-    lbName = reqObj["lbName"]
-    lbPort = reqObj["lbPort"]
-    lbProto = reqObj["lbProto"]
-    vipType = reqObj["vipType"]
-    nodePort = reqObj["nodePort"]
-    healthMon = reqObj["healthMon"]
-    healthMonType = reqObj["healthMonType"]
-    nodeIpType = reqObj["nodeIpType"]
-    nodeMin = reqObj["nodes"]["min"]
-    nodeMax = reqObj["nodes"]["max"]
+    lb_quan = req_obj["quantity"]
+    lb_name = req_obj["lbName"]
+    lb_port = req_obj["lbPort"]
+    lb_proto = req_obj["lbProto"]
+    vip_type = req_obj["vipType"]
+    node_port = req_obj["nodePort"]
+    health_mon = req_obj["healthMon"]
+    health_mon_type = req_obj["healthMonType"]
+    nodeip_type = req_obj["nodeIpType"]
+    node_min = req_obj["nodes"]["min"]
+    node_max = req_obj["nodes"]["max"]
    
-    for i in xrange(0,lbQuan+1):
+    for i in xrange(0,lb_quan+1):
         nodesStr ="" 
-        n = random.randint(nodeMin, nodeMax)
+        n = random.randint(node_min, node_max)
          
         for j in xrange(0, n):
-            ip = random.choice(ips[nodeIpType])
-            nodeStr = lb_node%(ip, nodePort)
-            nodesStr += "%s"%nodeStr
+            ip = random.choice(ips[nodeip_type])
+            nodeStr = lb_node%(ip, node_port)
+            nodesStr += "%s\n    "%nodeStr
         
-        lbStr = lb_post%(lbName + "%i"%i, lbPort, lbProto, vipType, nodesStr)
-        reqs.append(lbStr + "\n\n")
+        if health_mon == "true":
+           hm = hm_req%(health_mon_type)
+        else:
+           hm = "" 
+        
+        lbStr = lb_post%(lb_name + "%i"%i, lb_port, lb_proto, vip_type, nodesStr, hm)
+        reqs.append(lbStr + "\n")
     return reqs
 
 if __name__ == "__main__":
@@ -86,6 +95,7 @@ if __name__ == "__main__":
  
     random.shuffle(request_list)     
    
+    util.save_json("requests.json", request_list)
     fp = open("requests.xml", "w")
     for reqStr in request_list:
         fp.write(reqStr) 
