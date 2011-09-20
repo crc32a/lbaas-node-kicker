@@ -34,8 +34,8 @@ resp = req.send_req()
 
 try:
     resp = req.send_req()
-except:
-    printf("Error: ",resp.read())
+except urllib2.HTTPError, e:
+    printf("Error: ",e.code,e.read())
 
 auth_headers = dict(resp.headers.items())
 
