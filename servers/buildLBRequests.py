@@ -36,13 +36,13 @@ def load_headers():
 
 def write_log(logStr, error, lb, code):
     fp = open("metrics.log", "a")
-    fp.write("Took ")
-    fp.write("%g "%logStr)
-    fp.write("seconds to return response: \n")
-    fp.write("%s\n"%error)
-    fp.write("Response status code: %s \n"%code)
-    fp.write(lb)
-    fp.write("\n")
+    if not logStr == "":
+      fp.write("\n%s\n"%logStr)
+    
+    if not code == "" or not error == "" or not lb == "":
+      fp.write("Response status code: %s"%code)
+      fp.write("\n%s\n"%error)
+      fp.write("\n%s\n\n"%lb)
     fp.close()
 
 def build_lbs(reqs,url):    
@@ -52,18 +52,23 @@ def build_lbs(reqs,url):
         request = urllib2.Request(url, lb, headers) 
         try:
             start = time.time()
+            startTime = time.strftime("%a %m/%d/%y %H:%M:%S", time.localtime())
+            write_log("Start: sending request %s"%startTime, "", "", "")
             resp = urllib2.urlopen(request)
             end = time.time()
+            endTime = time.strftime("%a %m/%d/%y %H:%M:%S", time.localtime())
             reqTime = end - start
     
-            printf("%s%s%s", "Took ","%.2g"%reqTime," seconds to return a response \n")
-            write_log(reqTime, "", lb, resp.code)
-            printf("%s\n",resp.read())
+            printf("%s%s", "Took %.2g"%reqTime," seconds to return a response \n")
+            write_log("End response recieved %s \n"%endTime,"Took %g to return successful response: "%reqTime, resp.read(), resp.code)
+            printf("Response code: %s\n %s\n",resp.code, resp.read())
         except urllib2.HTTPError, e:
             msg = e.read()
             code = e.code
+            end = time.time()
+            endTime = time.strftime("%a %m/%d/%y %H:%M:%S", time.localtime())
             printf("Error code=%s\nbody=%s\n",code,msg)
-            write_log(0.0, msg, lb, code)
+            write_log("End: response recieved %s\n"%endTime, msg, lb, code)
 
 if __name__ == "__main__":
     prog = os.path.basename(sys.argv[0])
