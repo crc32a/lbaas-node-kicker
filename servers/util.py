@@ -15,23 +15,6 @@ def printf(format,*args): sys.stdout.write(format%args)
 
 def fprintf(fp,format,*args): fp.write(format%args)
 
-def splitpath(path):
-    full_path = fullpath(path)
-    return full_path.split(os.path.sep)
-
-def joinpath(components):
-    return string.join(components,os.path.sep)
-
-def stripbasedir(basedir,fulldir):
-    basedir_components = splitpath(basedir)
-    fulldir_components = splitpath(fulldir)
-    stripeddir_components = fulldir_components[len(basedir_components):]
-    striped_dir = joinpath(stripeddir_components)
-    return striped_dir
-
-def fullpath(path_in):
-    return os.path.abspath(os.path.expanduser(path_in))
-
 def chop(line):
     return line.replace("\r","").replace("\n","")
 
@@ -73,29 +56,6 @@ def save_json(json_file,obj):
     fp.write(out)
     fp.close()
 
-def dirwalk(path):
-    def vfunc(flist,dirname,names):
-        for name in names:
-            file_path = os.path.join(dirname,name)
-            if os.path.isfile(file_path):
-                flist.append(file_path)
-    flist = []
-    os.path.walk(path,vfunc,flist)
-    return flist
-
-def stripBaseList(basepath,file_list):
-    return [stripbasedir(basepath,f) for f in file_list]
-
-def getSkelPersonality(path):
-    out = {}
-    full_path = fullpath(path)
-    file_list = dirwalk(full_path)
-    for file_path in file_list:
-        k = stripbasedir(path,file_path)
-        v = open(file_path).read()
-        out[k]=v
-    return out
-
 def getServer(*names):
     out = {}
     s = servers.Servers()
@@ -121,7 +81,7 @@ def setPasswdServer(config,sname,passwd):
 
 def createServer(config,sname):
     s = servers.Servers()
-    personality=getSkelPersonality(config["skelPath"])
+    personality=servers.getSkelPersonality(config["skelPath"])
     name = sname
     resp = s.createServer(name=name,imageId=config["imageId"],
            flavorId=config["flavorId"],personality=personality)

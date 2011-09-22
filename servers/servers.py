@@ -1,11 +1,49 @@
 #!/usr/bin/env python
 
 import rest_client
-import base64
 import urllib2
+import string
+import base64
 import json
 import copy
 import sys
+import os
+
+
+
+def splitpath(path):
+    full_path = fullpath(path)
+    return full_path.split(os.path.sep)
+
+def dirwalk(path):
+    def vfunc(flist,dirname,names):
+        for name in names:
+            file_path = os.path.join(dirname,name)
+            if os.path.isfile(file_path):
+                flist.append(file_path)
+    flist = []
+    os.path.walk(path,vfunc,flist)
+    return flist
+
+def stripbasedir(basedir,fulldir):
+    basedir_components = splitpath(basedir)
+    fulldir_components = splitpath(fulldir)
+    stripeddir_components = fulldir_components[len(basedir_components):]
+    striped_dir = string.join(stripeddir_components,os.path.sep)
+    return striped_dir
+
+def getSkelPersonality(path):
+    out = {}
+    full_path = fullpath(path)
+    file_list = dirwalk(full_path)
+    for file_path in file_list:
+        k = stripbasedir(path,file_path)
+        v = open(file_path).read()
+        out[k]=v
+    return out
+
+def fullpath(path_in):
+    return os.path.abspath(os.path.expanduser(path_in))
 
 def RequiresKeys(op,*required):
     required_keys = set(required)
@@ -14,7 +52,7 @@ def RequiresKeys(op,*required):
             found_keys = set(kw.keys())
             missing_keys = required_keys - found_keys
             if len(missing_keys)>0:
-                msg = "Missing keys %s for operation %s"%(missing_keys,op)
+                msg = "Missing keys %s for operation %s" % (missing_keys,op)
                 raise KeyError(msg)
             return func(*args,**kw)
         return wrapper
@@ -45,7 +83,7 @@ class Servers(object):
                 obj["server"]["personality"].append(row)
         return self.postRequest("/servers",obj,debug=True)
 
-    def setPasswdServer(self,id,passwd):
+    def setPasswdServer(self, id, passwd):
         obj = {"server":{"adminPass":passwd}}
         return self.postRequest("/servers/%i"%id,obj,method="PUT",noresp=True)
 
@@ -58,7 +96,7 @@ class Servers(object):
         
     def deleteServer(self,id):
         kw = copy.deepcopy(Servers.BaseKw)
-        return self.getRequest("/servers/%i"%id,method="DELETE",noresp=True)
+        return self.getRequest("/servers/%i" % id, method="DELETE", noresp=True)
 
     def serverDetails(self):
         return self.getRequest("/servers/detail")
@@ -69,7 +107,7 @@ class Servers(object):
     def imageTypes(self):
         return self.getRequest("/images/detail")
 
-    def postRequest(self,uri,data,**kwargs):
+    def postRequest(self, uri,data, **kwargs):
         kw = copy.deepcopy(Servers.BaseKw)
         kw.update(kwargs)
         kw["uri"] = uri
@@ -80,14 +118,14 @@ class Servers(object):
         try:
             resp = urllib2.urlopen(req)
         except urllib2.HTTPError, e:
-            msg = "Error ResponseCode = %s\n%s\n"%(e.code,e.read())
+            msg = "Error ResponseCode = %s\n%s\n" % (e.code, e.read())
             sys.stderr.write(msg)
             return None
         if kwargs.has_key("noresp") and kwargs["noresp"]:
             return 
         return json.loads(resp.read())
 
-    def getRequest(self,uri,*args,**kwargs):
+    def getRequest(self, uri, *args, **kwargs):
         kw = copy.deepcopy(Servers.BaseKw)
         kw.update(kwargs)
         kw["uri"] = uri
@@ -97,7 +135,7 @@ class Servers(object):
         try:
             resp = urllib2.urlopen(req)
         except urllib2.HTTPError, e:
-            msg = "Error ResponseCode = %s\n%s\n"%(e.code,e.read())
+            msg = "Error ResponseCode = %s\n%s\n" % (e.code, e.read())
             sys.stderr.write(msg)
             return None
         if kwargs.has_key("noresp") and kwargs["noresp"]:

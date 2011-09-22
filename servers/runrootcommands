@@ -8,7 +8,7 @@ import os
 import re
 
 def usage(prog):
-    printf("Usage is %s <user> <passwd> <start> <stop> <cmds>\n",prog)
+    printf("Usage is %s <passwd> <start> <stop> <cmds>\n",prog)
     printf("\n")
     printf("Example %s \"somePasswd\" 1 10 \"/etc/init.d/apache2 stop\"\n",prog)
     printf("\n")
@@ -23,11 +23,10 @@ if __name__ == "__main__":
         usage(prog)
         sys.exit()
     config = util.load_json("config.json")
-    user = sys.argv[1]
-    passwd = sys.argv[2]
-    first = int(sys.argv[3])
-    last  = int(sys.argv[4])
-    cmds = sys.argv[5:]
+    passwd = sys.argv[1]
+    first = int(sys.argv[2])
+    last  = int(sys.argv[3])
+    cmds = sys.argv[4:]
     hosts = util.getHostsByNumber(config)
     old_nums = set(hosts.keys())
     del_nums = set(xrange(first,last+1))
@@ -43,7 +42,7 @@ if __name__ == "__main__":
         host_name = hosts[i]["name"]
         printf("changing running kick for host: %s\n",host_name)
         opts = {}
-        opts["user"]=user
+        opts["user"]="root"
         opts["passwd"] = passwd
         opts["host"] = hosts[i]["addresses"]["public"][0]
         opts["commands"]=cmds
