@@ -45,11 +45,22 @@ def write_log(logStr, error, lb, code):
       fp.write("\n%s\n\n"%lb)
     fp.close()
 
+def sleep(secs):
+    printf("Sleeping ... ")
+    sys.stdout.flush()
+    for i in xrange(0,secs+1):
+        printf("%i ",i)
+        time.sleep(1.0)
+        sys.stdout.flush()
+
 def build_lbs(reqs,url):    
+    i = 0
     for lb in reqs:
         headers = load_headers()
         printf("\n\nurl=%s\ndata=%s\n",url,lb)
         request = urllib2.Request(url, lb, headers) 
+        i += 1
+        printf("Building %i\n",i)
         try:
             start = time.time()
             startTime = time.strftime("%a %m/%d/%y %H:%M:%S", time.localtime())
