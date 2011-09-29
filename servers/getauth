@@ -25,7 +25,7 @@ if len(sys.argv)<2:
 
 authjson_file = sys.argv[1]
 
-kw = util.load_json(authjson_file)
+kw = util.clean_dict_keys(util.load_json(authjson_file))
 req = rest_client.RestClient(**kw)
 printf("kw=%s\n",kw)
 req.set_config(**kw)

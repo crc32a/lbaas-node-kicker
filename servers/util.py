@@ -48,7 +48,7 @@ def load_json(json_file):
     fp = open(full_path,"r")
     json_data = fp.read()
     fp.close()
-    out = clean_dict_keys(json.loads(json_data))
+    out = json.loads(json_data)
     return out
 
 def save_json(json_file,obj):
