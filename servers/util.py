@@ -11,6 +11,9 @@ import re
 
 cmd_str  = "(\S+)\s+(\S+).*(%s)\s+(.*)"
 
+def clean_dict_keys(dict_in):
+    return dict([(k.encode("ascii"),v) for (k,v) in dict_in.items()])
+
 def printf(format,*args): sys.stdout.write(format%args)
 
 def fprintf(fp,format,*args): fp.write(format%args)
@@ -45,7 +48,7 @@ def load_json(json_file):
     fp = open(full_path,"r")
     json_data = fp.read()
     fp.close()
-    out = json.loads(json_data)
+    out = clean_dict_keys(json.loads(json_data))
     return out
 
 def save_json(json_file,obj):
