@@ -72,6 +72,7 @@ def build_lbs(reqs,url):
     
             printf("%s%s", "Took %.2g"%reqTime," seconds to return a response \n")
             write_log("End response recieved %s \n"%endTime,"Took %g to return successful response: "%reqTime, resp.read(), resp.code)
+            sleep(2)
             printf("Response code: %s\n %s\n",resp.code, resp.read())
         except urllib2.HTTPError, e:
             msg = e.read()
@@ -80,6 +81,7 @@ def build_lbs(reqs,url):
             endTime = time.strftime("%a %m/%d/%y %H:%M:%S", time.localtime())
             printf("Error code=%s\nbody=%s\n",code,msg)
             write_log("End: response recieved %s\n"%endTime, msg, lb, code)
+            sleep(2)
 
 if __name__ == "__main__":
     prog = os.path.basename(sys.argv[0])
