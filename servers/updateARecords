@@ -5,12 +5,13 @@ import xmlrpclib
 import util
 import re
 
-a_re = re.compile("^n([0-9]+)$")
 
 if __name__=='__main__':
     dnsconf = util.load_json("dnsxmlclient.json")
     config = util.load_json('config.json')
-
+    prefix = config["prefix"]
+    a_re = re.compile("^%s([0-9]+)$"%re.escape(prefix))
+    
     url = dnsconf["url"]
     cred = dnsconf["cred"]
     s = xmlrpclib.ServerProxy(url)
@@ -27,15 +28,15 @@ if __name__=='__main__':
     
     for id in sorted((set(A.keys()) - set(S.keys()))):
         printf("Removing A Record: %s %s\n",id,A[id])
-        s.delARecord(cred,"n%i"%id)
+        s.delARecord(cred, prefix + "%i"%id)
 
     for id in sorted((set(S.keys()) - set(A.keys()))):
         printf("Adding A record: %s %s\n",id,S[id])
-        s.setARecord(cred,"n%i"%id,S[id])
+        s.setARecord(cred,prefix + "%i"%id,S[id])
 
     for id in sorted((set(S.keys()) & set(A.keys()))):       
         if S[id] != A[id]:
             printf("Updating %s to %s\n",id,S[id])
-            s.setARecord(cred,"n%i"%id,S[id])
+            s.setARecord(cred,prefix + "%i"%id,S[id])
         else:
             printf(" Leaving %s %s alone\n",id,S[id])

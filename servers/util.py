@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from servers import load_json, save_json
 import rest_client
 import urllib2
 import servers
@@ -41,23 +42,6 @@ def save_cpickle(obj,file_name):
     fp.close()
     return None
 
-
-def load_json(json_file):
-    full_path = os.path.expanduser(json_file)
-    full_path = os.path.abspath(full_path)
-    fp = open(full_path,"r")
-    json_data = fp.read()
-    fp.close()
-    out = json.loads(json_data)
-    return out
-
-def save_json(json_file,obj):
-    full_path = os.path.expanduser(json_file)
-    full_path = os.path.abspath(full_path)
-    fp = open(full_path,"w")
-    out = json.dumps(obj, indent=2)
-    fp.write(out)
-    fp.close()
 
 def getServer(*names):
     out = {}
@@ -113,7 +97,7 @@ def getHostsByNumber(config):
     return out
 
 def getHostRe(config):
-    host_restr = "n([0-9]+)%s"
+    host_restr = config["prefix"] + "([0-9]+)%s"
     host_re = re.compile(host_restr%(re.escape(config["baseHost"])))
     return host_re
 
@@ -145,5 +129,14 @@ def stripBaseHost(config,host):
         raise ValueError("%s does not match with %s"%(host,config["baseHost"]))
     return m.group(1)
 
-
-    
+def dictargs(dict_in,keyStr):
+    out = []
+    for key in keyStr.split(","):
+        obj = dict_in
+        for key_component in key.split("."):
+            if key_component.startswith("#"):
+                obj = obj[int(key_component[1:])]
+            else:
+                obj = obj[key_component]
+        out.append(obj)
+    return tuple(out)

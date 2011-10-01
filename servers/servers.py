@@ -9,6 +9,24 @@ import copy
 import sys
 import os
 
+DETAILS_CACHE_FILE = "details.json"
+
+def load_json(json_file):
+    full_path = os.path.expanduser(json_file)
+    full_path = os.path.abspath(full_path)
+    fp = open(full_path,"r")
+    json_data = fp.read()
+    fp.close()
+    out = json.loads(json_data)
+    return out
+
+def save_json(json_file,obj):
+    full_path = os.path.expanduser(json_file)
+    full_path = os.path.abspath(full_path)
+    fp = open(full_path,"w")
+    out = json.dumps(obj, indent=2)
+    fp.write(out)
+    fp.close()
 
 
 def splitpath(path):
@@ -66,7 +84,6 @@ class Servers(object):
         "headers":{"accept":"application/json","content-type":"application/json"}
        }
 
-
     @RequiresKeys("createServer","name","imageId","flavorId")
     def createServer(self,*args,**kw):
         obj = {}
@@ -81,7 +98,7 @@ class Servers(object):
                 row["path"] = k
                 row["contents"] = base64.standard_b64encode(v)
                 obj["server"]["personality"].append(row)
-        return self.postRequest("/servers",obj,debug=True)
+        return self.postRequest("/servers",obj,debug=False)
 
     def setPasswdServer(self, id, passwd):
         obj = {"server":{"adminPass":passwd}}
@@ -98,8 +115,19 @@ class Servers(object):
         kw = copy.deepcopy(Servers.BaseKw)
         return self.getRequest("/servers/%i" % id, method="DELETE", noresp=True)
 
-    def serverDetails(self):
-        return self.getRequest("/servers/detail")
+    def serverDetails(self,*args,**kargs):
+        cache = kargs["cache"] if kargs.has_key("cache") else True
+        file_path = os.path.abspath(os.path.expanduser(DETAILS_CACHE_FILE))
+        if cache and os.path.isfile(file_path):
+            details = load_json(DETAILS_CACHE_FILE)
+            return details
+        details = self.getRequest("/servers/detail")
+        if cache:
+            save_json(DETAILS_CACHE_FILE,details)
+        return details
+
+    def serverDetail(self,id):
+        return self.getRequest("/servers/%i"%id)
 
     def flavorTypes(self):
         return self.getRequest("/flavors/detail")
@@ -139,5 +167,5 @@ class Servers(object):
             sys.stderr.write(msg)
             return None
         if kwargs.has_key("noresp") and kwargs["noresp"]:
-            return 
+            return None
         return json.loads(resp.read())

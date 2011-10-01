@@ -1,6 +1,7 @@
 {
   "skelPath": "~/skel", 
   "baseHost": "yourSubDomain", 
+  "prefix":"n",
   "imageId": 49,
   "flavorId":5
 }

@@ -3,12 +3,17 @@
 from util import printf, fprintf
 import util
 import json
+import sys
+import os
 import re
 
 if __name__=='__main__':
+    if len(sys.argv)>=2:
+        os.unlink("details.json")
     config = util.load_json('config.json')
     hosts = util.getHostsByNumber(config)
     keys = sorted(hosts.keys())
+    prefix = config["prefix"]
     for k in keys:
         format = "%s: %s id=%i (%s)\n"
         args = []

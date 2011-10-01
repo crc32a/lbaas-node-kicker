@@ -25,6 +25,7 @@ if __name__ == "__main__":
         sys.exit()
     s = servers.Servers()
     config = util.load_json("config.json")
+    prefix = config["prefix"]
     passwd = sys.argv[1]
     first = int(sys.argv[2])
     last  = int(sys.argv[3])
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     del_nums = set(xrange(first,last+1))
     dontexist = del_nums - old_nums
     if len(dontexist)>0:
-        dontexistnames = ["n%i%s"%(i,config["baseHost"]) for i in dontexist]
+        dontexistnames = ["%s%i%s"%(prefix,i,config["baseHost"]) for i in dontexist]
         printf("The below hosts do not  exist and can not be password changed")
         for name in dontexistnames:
             printf("%s\n",name)

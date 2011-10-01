@@ -26,6 +26,7 @@ if __name__ == "__main__":
     first = int(sys.argv[1])
     last  = int(sys.argv[2])
     hosts = util.getHostsByNumber(config)
+    prefix = config["prefix"]
     old_nums = set(hosts.keys())
     new_nums = set(xrange(first,last+1))
     intersection = old_nums & new_nums
@@ -37,7 +38,7 @@ if __name__ == "__main__":
             printf("%s\n",hosts[i]["name"])
         sys.exit()
     for i in sorted(new_nums):
-        host_name = "n%i%s"%(i,config["baseHost"])
+        host_name = "%s%i%s"%(prefix,i,config["baseHost"])
         printf("Adding host: %s\n",host_name)
         resp = util.createServer(config,host_name)
         printf("Sleeping: ")
