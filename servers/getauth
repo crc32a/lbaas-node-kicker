@@ -30,8 +30,6 @@ req = rest_client.RestClient(**kw)
 printf("kw=%s\n",kw)
 req.set_config(**kw)
 
-resp = req.send_req()
-
 try:
     resp = req.send_req()
 except urllib2.HTTPError, e:
