@@ -7,6 +7,8 @@ import sys
 import os
 import re
 
+BUFSIZE = 4096
+
 def usage(prog):
     printf("Usage is %s <passwd> <start> <stop>\n",prog)
     printf("\n")
@@ -47,13 +49,15 @@ if __name__ == "__main__":
         opts["user"]="root"
         opts["passwd"] = passwd
         opts["host"] = hosts[i]["addresses"]["public"][0]
-        opts["commands"]=cmds
-        (fp,pid) = sshlib.pssh(**opts)
-        while True:
-            line = fp.readline()
-            if line == "":
-                break
-            sys.stdout.write(line)
-            sys.stdout.flush()
+        s = sshlib.Ssh(**opts)
+        s.open()
+        for cmd in cmds:
+            c = s.execute(cmd)
+            while True:
+                data = c.recv(BUFSIZE)
+                if len(data)<=0:
+                    break
+                sys.stdout.write(data)
+                sys.stdout.flush()
         printf("\n\n\n")
         printf("Finished with host %s\n",opts["host"])
