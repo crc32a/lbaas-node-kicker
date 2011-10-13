@@ -58,8 +58,6 @@ def sleep(secs):
 def build_lbs(reqs,url,delay):
     i = 0
     for lb in reqs:
-        countdown(delay)
-        continue
         headers = load_headers()
         printf("\n\nurl=%s\ndata=%s\n",url,lb)
         request = urllib2.Request(url, lb, headers) 
