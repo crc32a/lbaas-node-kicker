@@ -9,8 +9,10 @@ import os
 import pickle
 
 def usage(prog):
-     printf("usage is %s <json_config_file>\n",prog)
+     printf("usage is %s <json_config_file> [delay_secs]\n",prog)
      printf("\n")
+     printf("if delay_secs is specified then script will wait for the\n")
+     printf("specified number of seconds inbween lb builds\n")
 
 def render_json_objects(reqs_file):
     reqs = util.load_json(reqs_file)
@@ -53,9 +55,11 @@ def sleep(secs):
         time.sleep(1.0)
         sys.stdout.flush()
 
-def build_lbs(reqs,url):    
+def build_lbs(reqs,url,delay):
     i = 0
     for lb in reqs:
+        countdown(delay)
+        continue
         headers = load_headers()
         printf("\n\nurl=%s\ndata=%s\n",url,lb)
         request = urllib2.Request(url, lb, headers) 
@@ -72,7 +76,7 @@ def build_lbs(reqs,url):
     
             printf("%s%s", "Took %.2g"%reqTime," seconds to return a response \n")
             write_log("End response recieved %s \n"%endTime,"Took %g to return successful response: "%reqTime, resp.read(), resp.code)
-            sleep(2)
+            countdown(delay)
             printf("Response code: %s\n %s\n",resp.code, resp.read())
         except urllib2.HTTPError, e:
             msg = e.read()
@@ -81,7 +85,17 @@ def build_lbs(reqs,url):
             endTime = time.strftime("%a %m/%d/%y %H:%M:%S", time.localtime())
             printf("Error code=%s\nbody=%s\n",code,msg)
             write_log("End: response recieved %s\n"%endTime, msg, lb, code)
-            sleep(2)
+            countdown(delay)
+
+def countdown(secs):
+    sys.stdout.write("SLEEP: ")
+    sys.stdout.flush()
+    for i in xrange(0,secs):
+        time.sleep(1.0)
+        sys.stdout.write(" %i"%i)
+        sys.stdout.flush()
+    sys.stdout.write("\n")
+    sys.stdout.flush()
 
 if __name__ == "__main__":
     prog = os.path.basename(sys.argv[0])
@@ -89,6 +103,7 @@ if __name__ == "__main__":
         usage(prog)
         sys.exit()
     config_file = sys.argv[1]
+    delay = 3 if len(sys.argv)<3 else int(sys.argv[2])
     url = load_url(config_file)
     request_objects = render_json_objects("requests.json")
-    build_lbs(request_objects,url)
+    build_lbs(request_objects,url,delay)
