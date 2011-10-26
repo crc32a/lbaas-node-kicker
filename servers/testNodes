@@ -3,6 +3,7 @@
 from util import printf, fprintf
 import traceback
 import urllib2
+import util
 import json
 import sys
 import os
@@ -20,9 +21,16 @@ if __name__ == "__main__":
         sys.exit()
     first = int(sys.argv[1])
     last  = int(sys.argv[2])
+    config = util.load_json("config.json")
+    hosts = util.getHostsByNumber(config)
 
+    host_keys = sorted(hosts.keys())
     for i in xrange(first,last+1):
-        url = "http://n%i.crc.m2linux.com/request/version"%i
+        if i not in host_keys:
+            format = "no info for host %i found in server_list.json skipping\n"
+            printf(format,i)
+            continue
+        url = "http://%s/request/version"%(hosts[i]["addresses"]["public"][0])
         try:
             resp = json.loads(urllib2.urlopen(url).read())
             printf("node[%3i]:Version %s PASS\n",i,resp["version"])
