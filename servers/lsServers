@@ -23,5 +23,5 @@ if __name__=='__main__':
         args.append(hosts[k]["id"])
         args.append(hosts[k]["status"])
         printf(format,*args)
-    printf("Saving server list to servers.json\n")
+    printf("Saving server list to server_list.json\n")
     util.save_json("server_list.json",hosts)
