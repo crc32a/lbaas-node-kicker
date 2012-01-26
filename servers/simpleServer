@@ -31,7 +31,7 @@ def showResp(jsonStr):
 
 if __name__ == "__main__":
     prog = os.path.basename(sys.argv[0])
-    if len(sys.argv)<5:
+    if len(sys.argv)<4:
         usage(prog)
         sys.exit()
     s = servers.Servers()
