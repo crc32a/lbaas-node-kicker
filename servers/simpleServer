@@ -39,6 +39,7 @@ if __name__ == "__main__":
     kw["imageId"] = int(sys.argv[1])
     kw["flavorId"] = int(sys.argv[2])
     kw["name"] = sys.argv[3]
-    kw["skel"] = sys.argv[4]
+    if len(sys.argv)>=5:
+        kw["skel"] = sys.argv[4]	
     resp = buildServer(s,**kw)
     showResp(resp)    
