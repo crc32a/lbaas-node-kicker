@@ -13,3 +13,50 @@ This project uses the following projects
     git://github.com/crc32a/NodeToys.git for the NodeToys project that 
     actually gets deployed by the servers tools.
 
+
+
+
+
+Check out the project from git hub.
+git clone git://github.com/crc32a/lbaas-node-kicker.git
+cd into ./lbaas-node-kicker/servers
+un tar the file json.tar.gz attached to this email
+tar -xvcf json.tar.gz 
+
+
+run the command
+./getauth cgarza.json (this has my info in it - although it says cGarza)
+This creates the auth_headers.db file which stores the auth token for the lsServers script.
+
+now run
+./lsServers  xxxx This will fetch all the machines stored in the umagoring account. This part is crumby as Cloud Servers API isn't real hit or miss if it fails you may
+keep re running it till it works. The script will create a file called server_list.json which is used so the genRequest script doesn't need to even hit
+the CloudServers api to see what nodes are available. IE you only need to run ./lsServers once because its too painful to keep running over and over.
+
+Edit the reqConfig.json file to you likings. You can change the quantity fields if you want. 3000 lbs may be to much for your likeings.
+
+
+now run
+./genRequests 
+This build the requests and stores then in requests.json
+
+Finaly run
+./buildLBRequests.py lbConfig.json
+This will call the api and create the loadbalancers. Edit the lbConfig.json if
+you intend to hit a different end point. 
+Also note that the code is going throgh the management interface and uses the extra_headers.json file to 
+bypass auth.
+
+
+The ./lsServers assume that servers have been created.
+
+In order to spin up servers if servers have not been created do
+To add 100 servers with password uma
+./addServers 1 100 
+./lsServers xxxx
+./passwdservers uma 1 100
+./initkick uma 1 5
+
+//in order to see what goes into initkick script look at initkick in 
+/Users/uma.goring/lbaasPerformance/lbaas-node-kicker/servers/skel/usr/local/sbin
+
